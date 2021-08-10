@@ -1,0 +1,18 @@
+.s130 {
+    
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-pack: center;
+        justify-content: center;
+   
+/* 사진링크변경 */
+    background: url("https://images.pexels.com/photos/1230302/pexels-photo-1230302.jpeg?cs=srgb&dl=pexels-kun-fotografi-1230302.jpg&fm=jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    padding: 100px;
+   
+   
+    
+    
+  } 

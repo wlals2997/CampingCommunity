@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+
+    PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ccommunity.mapper.BoardMapper">
+
+	<!-- 게시판 목록(리스트) 조회 -->
+	<select id="getBoardList"
+		resultType="com.ccommunity.model.board.dto.BoardVO">
+
+		SELECT
+
+		F_SEQ, f_TITLE, f_CONTENT, f_CNT, f_W_ID, f_REGDATE, EDIT_DATE
+
+		FROM
+		
+		f_brd
+
+	</select>
+
+	<!-- 게시물 쓰기(작성) -->
+	<insert id="insertBoard"
+		parameterType="com.ccommunity.model.board.dto.BoardVO">
+
+		INSERT INTO f_brd (f_TITLE, f_CONTENT, f_CNT, f_W_ID,
+		f_REGDATE, EDIT_DATE)
+
+		VALUES (
+
+		#{f_title}
+
+		, #{f_content}
+
+		, 0
+
+		, #{f_w_id}
+
+		, now()
+
+		,
+		now()
+
+		)
+
+	</insert>
+
+	<!-- 게시물 상세 조회 -->
+	<select id="getBoardContent"
+		resultType="com.ccommunity.model.board.dto.BoardVO"
+		parameterType="com.ccommunity.model.board.dto.BoardVO">
+
+		SELECT
+
+		F_SEQ, f_TITLE, f_CONTENT, f_CNT, f_W_ID, f_REGDATE,
+		EDIT_DATE
+
+		FROM
+
+		f_brd
+
+		WHERE
+
+		F_SEQ = #{f_seq}
+
+	</select>
+
+	<!-- 게시물 수정 -->
+	<update id="updateBoard"
+		parameterType="com.ccommunity.model.board.dto.BoardVO">
+
+		UPDATE f_brd
+
+		SET
+
+		TITLE = #{f_title}
+
+		, F_CONTENT = #{f_content}
+
+		, EDIT_DATE = now()
+
+		WHERE
+
+		F_SEQ =
+		${f_seq}
+
+	</update>
+
+	<!-- 게시물 삭제 -->
+	<delete id="deleteBoard" parameterType="int"> DELETE FROM f_brd
+		WHERE F_SEQ = #{f_seq}
+	</delete>
+	
+	<!-- 조회수 UP -->
+	<update id="updateViewCnt"
+		parameterType="com.ccommunity.model.board.dto.BoardVO">
+		UPDATE f_brd SET f_CNT = f_CNT + 1 WHERE F_SEQ = #{f_seq}
+	</update>
+
+	<!-- 검색 조건문 -->
+    <sql id="criteria">
+        <trim prefix="where (" suffix=")" prefixOverrides="OR">
+            <foreach collection="typeArr" item="type">
+                <trim prefix="OR">
+                    <choose>
+                        <when test="type == 'T'.toString()">
+                            f_title like concat('%',#{keyword},'%') 
+                        </when>
+                        <when test="type == 'C'.toString()">
+                            f_content like concat('%',#{keyword},'%') 
+                        </when>
+                        <when test="type == 'W'.toString()">
+                            f_w_id like concat('%',#{keyword},'%' )
+                        </when>
+                    </choose>
+                </trim>
+            </foreach>
+        </trim>
+    
+    </sql>
+
+	<!-- 게시물 목록(페이징) -->
+    <select id="getBoardListPaging" resultType="com.ccommunity.model.board.dto.BoardVO">
+    
+        select * from (
+                select f_seq, f_title, f_cnt, f_w_id, f_regdate, edit_date
+                from f_brd 
+                <if test="keyword != null">
+                	<include refid="criteria"></include>
+                </if>
+                order by f_seq desc) as T1 
+        <!-- limit ((${pageNum}-1)*${amount}), ${amount} -->
+        <!-- limit 스킵할 게시물 수, 한 페이지 당 보여질 게시물 갯수 -->
+        limit #{skip},#{amount}
+    	
+    </select>
+    
+    <!-- 게시물 총 갯수 -->
+    <select id="getTotal" resultType="int">
+    
+        select count(*) from f_brd
+    
+    	<if test="keyword != null">
+    	
+    		<include refid="criteria"></include>
+    	
+    	</if>
+    </select>
+
+	<!-- 게시글 순위 부여 -->
+	<select id="getBoardListRank" resultType="com.ccommunity.model.board.dto.BoardVO">
+		SELECT f_title, f_w_id, f_cnt
+		FROM f_brd
+		WHERE f_regdate BETWEEN DATE_ADD(NOW(), INTERVAL-1 WEEK) AND NOW()
+		ORDER BY f_cnt DESC LIMIT 10;
+	</select>
+</mapper>

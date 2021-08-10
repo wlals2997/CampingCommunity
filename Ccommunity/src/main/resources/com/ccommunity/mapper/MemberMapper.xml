@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- SQL Mapping -->
+<!-- DAO 클래스에서 참조할 때는 Namespace와 SQL의 아이디를 결합하여 참조하여야 한다. -->
+<mapper namespace="com.ccommunity.mapper.MemberMapper">
+	<insert id="memberSignup">
+		insert into users (id, pw, name, email, tel)
+		values(#{id}, #{pw}, #{name}, #{email}, #{tel})
+	</insert>
+	
+	<select id = "memberInfo" resultType="com.ccommunity.model.member.dto.MemberVO">
+		select * from users where id = #{id} and pw=#{pw}
+	</select>
+	
+	<select id="memberLogin" resultType="com.ccommunity.model.member.dto.MemberVO">
+		SELECT id, name 
+		FROM users
+		WHERE id = #{id} AND pw = #{pw}
+	</select>	
+	
+	<!-- 아이디 중복검사 -->
+	<select id="selectById" resultType="String" >
+		SELECT id
+		FROM users
+		WHERE id = #{id}
+	</select>
+	
+	<!-- 이메일 중복 검사 -->
+	<select id="selectByEmail" resultType="String">
+		SELECT EMAIL
+		FROM USERS
+		WHERE EMAIL = #{email}
+	</select>
+	
+
+</mapper>

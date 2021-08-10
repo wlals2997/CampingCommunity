@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- SQL Mapping -->
+<!-- DAO 클래스에서 참조할 때는 Namespace와 SQL의 아이디를 결합하여 참조하여야 한다. -->
+<mapper namespace="com.ccommunity.mapper.CampMapper">
+	<select id="getSigungu" resultType="String">
+		SELECT sigungu
+		FROM camp
+		WHERE sido = #{sido}
+		GROUP BY sigungu;
+	</select>	
+	
+	<select id="getCampList" resultType="com.ccommunity.model.camp.dto.CampVO">
+		SELECT c_name, c_addr, c_code
+		FROM camp
+		WHERE sido= #{sido} AND sigungu=#{sigungu}
+	</select>
+</mapper>
